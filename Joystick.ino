@@ -14,8 +14,8 @@ static int protothread1(struct pt *pt) {
   PT_BEGIN(pt); 
   while(1) {           
     PT_WAIT_UNTIL(pt, true);  
-    } 
-    PT_END(pt);
+  } 
+  PT_END(pt);
 }
 
 void loop() {
