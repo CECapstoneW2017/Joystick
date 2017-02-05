@@ -1,26 +1,57 @@
+//This is a test program for learning protothreading
+#include <pt.h>   // include protothread library
 
-#include <pt.h>
+#define LEDPIN 13  // LEDPIN is a constant 
 
-// every protothread needs an own struct pt variable
-static struct pt pt1;
+static struct pt pt1, pt2; // each protothread needs one of these
+/*
+ * Priorities of tasks:
+ * First task: Read the serial input from CHAI3D
+ * Second task: Generate Motor Torque
+ * Third task: Read the angle 
+ * Fourth task: Send serial output of angle. 
+ */
+
 
 void setup() {
-  // put your setup code here, to run once:
-  /* Initialize the protothread state variables with PT_INIT(). */     
-  PT_INIT(&pt1); 
-
+  pinMode(LEDPIN, OUTPUT); // LED init
+  PT_INIT(&pt1);  // initialise the two
+  PT_INIT(&pt2);  // protothread variables
 }
 
-//This is a skeleton of a protothread. 
-static int protothread1(struct pt *pt) { 
-  PT_BEGIN(pt); 
-  while(1) {           
-    PT_WAIT_UNTIL(pt, false);  
-  } 
+void toggleLED() {
+  boolean ledstate = digitalRead(LEDPIN); // get LED state
+  ledstate ^= 1;   // toggle LED state using xor
+  digitalWrite(LEDPIN, ledstate); // write inversed state back
+}
+
+/* This function toggles the LED after 'interval' ms passed */
+static int protothread1(struct pt *pt, int interval) {
+  static unsigned long timestamp = 0;
+  PT_BEGIN(pt);
+  while(1) { // never stop 
+    /* each time the function is called the second boolean
+    *  argument "millis() - timestamp > interval" is re-evaluated
+    *  and if false the function exits after that. */
+    PT_WAIT_UNTIL(pt, millis() - timestamp > interval );
+    timestamp = millis(); // take a new timestamp
+    toggleLED();
+  }
+  PT_END(pt);
+}
+/* exactly the same as the protothread1 function */
+static int protothread2(struct pt *pt, int interval) {
+  static unsigned long timestamp = 0;
+  PT_BEGIN(pt);
+  while(1) {
+    PT_WAIT_UNTIL(pt, millis() - timestamp > interval );
+    timestamp = millis();
+    toggleLED();
+  }
   PT_END(pt);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-
+  protothread1(&pt1, 900); // schedule the two protothreads
+  protothread2(&pt2, 1000); // by calling them infinitely
 }
