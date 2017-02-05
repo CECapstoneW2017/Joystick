@@ -10,8 +10,11 @@ void setup() {
 
 void loop() {
   // put your main code here, to run repeatedly:
+  /*
   digitalWrite(motorPin, HIGH);
   delayMicroseconds(delayHigh);
   digitalWrite(motorPin, LOW);
   delayMicroseconds(delayTime);
+  */
+  //analogWrite(motorPin, 30);
 }
