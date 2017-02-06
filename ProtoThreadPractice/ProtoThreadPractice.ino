@@ -4,6 +4,8 @@
 #define LEDPIN 13  // LEDPIN is a constant 
 #define POT1PIN 11
 #define POT2PIN 12
+#define MOTOR_PIN_1 5 //Pin supports PWM
+#define MOTOR_PIN_2 6 //Pin that supports PWM
 #define ANGLE_FACTOR_1 1 // Factor to calculate angle from pot signal
 #define ANGLE_FACTOR_2 1 // Factor to calculate angle from pot signal
 
@@ -11,6 +13,8 @@ int pot1 = 0;
 int pot2 = 0;
 int angle1 = 0;
 int angle2 = 0;
+int motorTorque1 = 0;
+int motorTorque2 = 0;
 
 static struct pt pt1, pt2; // each protothread needs one of these
 /*
@@ -24,8 +28,11 @@ static struct pt pt1, pt2; // each protothread needs one of these
 
 void setup() {
   pinMode(LEDPIN, OUTPUT); // LED init
+  pinMode(MOTOR_PIN_1, OUTPUT);
+  pinMode(MOTOR_PIN_2, OUTPUT);
   PT_INIT(&pt1);  // initialise the two
   PT_INIT(&pt2);  // protothread variables
+  
 }
 
 void toggleLED() {
@@ -52,19 +59,26 @@ static int protothread1(struct pt *pt, int interval) {
   }
   PT_END(pt);
 }
-/* exactly the same as the protothread1 function */
+/* Generate the motor Torque*/
 static int protothread2(struct pt *pt, int interval) {
   static unsigned long timestamp = 0;
   PT_BEGIN(pt);
   while(1) {
-    PT_WAIT_UNTIL(pt, millis() - timestamp > interval );
-    timestamp = millis();
-    toggleLED();
+    PT_WAIT_UNTIL(pt, interval );
+    /*
+    digitalWrite(motorPin, HIGH);
+    delayMicroseconds(delayHigh);
+    digitalWrite(motorPin, LOW);
+    delayMicroseconds(delayTime);
+    */
+    analogWrite(MOTOR_PIN_1, motorTorque1);
+    analogWrite(MOTOR_PIN_2, motorTorque2);
   }
   PT_END(pt);
 }
 
 void loop() {
+  //Left these two threads like this for now.
   protothread1(&pt1, 900); // schedule the two protothreads
   protothread2(&pt2, 1000); // by calling them infinitely
 }
