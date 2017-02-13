@@ -16,7 +16,11 @@ int angle2 = 0;
 int motorTorque1 = 0;
 int motorTorque2 = 0;
 
-static struct pt pt1, pt2; // each protothread needs one of these
+String inputString = "";
+boolean stringComplete = false;
+char inChar = (char)Serial
+
+static struct pt pt1, pt2, pt3; // each protothread needs one of these
 /*
  * Priorities of tasks:
  * First task: Read the serial input from CHAI3D
@@ -30,6 +34,8 @@ void setup() {
   pinMode(LEDPIN, OUTPUT); // LED init
   pinMode(MOTOR_PIN_1, OUTPUT);
   pinMode(MOTOR_PIN_2, OUTPUT);
+  inputString.reserve(200);
+  
   PT_INIT(&pt1);  // initialise the two
   PT_INIT(&pt2);  // protothread variables
   
@@ -59,6 +65,20 @@ static int protothread1(struct pt *pt, int interval) {
   }
   PT_END(pt);
 }
+
+/* Receive the String from the driver for motor*/
+static int protothread3(struct pt *pt, int interval) {
+  static unsigned long timestamp = 0;
+  PT_BEGIN(pt);
+  while(1) {
+    PT_WAIT_UNTIL(pt, Serial.available() );
+    
+    analogWrite(MOTOR_PIN_1, motorTorque1);
+    analogWrite(MOTOR_PIN_2, motorTorque2);
+  }
+  PT_END(pt);
+}
+
 /* Generate the motor Torque*/
 static int protothread2(struct pt *pt, int interval) {
   static unsigned long timestamp = 0;
@@ -79,6 +99,6 @@ static int protothread2(struct pt *pt, int interval) {
 
 void loop() {
   //Left these two threads like this for now.
-  protothread1(&pt1, 900); // schedule the two protothreads
+  protothread1(&pt1, 10); // schedule the two protothreads
   protothread2(&pt2, 1000); // by calling them infinitely
 }
