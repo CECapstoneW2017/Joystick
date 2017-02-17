@@ -2,7 +2,6 @@
 #include <pt.h>   // include protothread library
 
 #define BAUD_RATE 115200 //Faster than 9600
-#define LEDPIN 13  // LEDPIN is a constant 
 #define POT1PIN 11
 #define POT2PIN 12
 #define MOTOR_PIN_1 5 //Pin supports PWM
@@ -32,13 +31,15 @@ static struct pt pt1, pt2, pt3, pt4; // each protothread needs one of these
 
 
 void setup() {
-  pinMode(LEDPIN, OUTPUT); // LED init
+ 
   pinMode(MOTOR_PIN_1, OUTPUT);
   pinMode(MOTOR_PIN_2, OUTPUT);
   inputString.reserve(200);
   
   PT_INIT(&pt1);  // initialise the two
   PT_INIT(&pt2);  // protothread variables
+  PT_INIT(&pt3);  // protothread variables
+  PT_INIT(&pt4);  // protothread variables
   Serial.begin(BAUD_RATE);
 }
 
