@@ -2,17 +2,20 @@
 #define MOTOR_PIN_2 6
 #define POT_1 A0
 #define POT_2 A1
-#define ANGLE_FACTOR 0.25
+#define POT_3 A2
+#define POT_4 A3
+#define ANGLE_FACTOR 0.26
 #define ANGLE_STRING_1 "Angle 1: "
 #define ANGLE_STRING_2 "Angle 2: "
 
-int pot1, pot2;
+int pot1, pot2, pot3, pot4;
 //Motor 1
 int in1 = 8;
 int in2 = 7;
 //Motor 2
 int in3 = 12;
 int in4 = 13;
+
 
 double angle1, angle2;
 double motorADirection;
@@ -36,8 +39,11 @@ void loop() {
   //Motor Direction determined by potentiometer
   pot1 = analogRead(POT_1);
   pot2 = analogRead(POT_2);
-  motorADirection = ( pot1 - 512) / 2;
-  motorBDirection = ( pot2 - 512) / 2;
+  pot3 = analogRead(POT_3);
+  pot4 = analogRead(POT_4);
+  
+  motorADirection = ( pot3 - 512) / 2;
+  motorBDirection = ( pot4 - 512) / 2;
   angle1 = ANGLE_FACTOR * (pot1 - 512);
   angle2 = ANGLE_FACTOR * (pot2 - 512);
   angleString1 = "Angle 1: ";

@@ -1,6 +1,7 @@
 #define POTPIN1 A0 //Input pin to the potentiometer
 #define POTPIN2 A1
-#define ANGLE_FACTOR 0.25 //This will change once I get the pots
+#define ANGLE_FACTOR 0.26
+//This will change once I get the pots
 #define ANGLE_STRING_1 "Angle1: "
 #define ANGLE_STRING_2 "Angle2: "
 
@@ -27,8 +28,8 @@ void loop() {
   angleString2 = "Angle 2: " ;
   angleString2.concat(angle2);
   
-  Serial.println(angleString1);
+  Serial.println(angleString1 + "  " + angleString2);
   //Serial.println(angleString2);
 
-  delay(500);
+  delay(50);
 }
