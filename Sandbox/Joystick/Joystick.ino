@@ -2,9 +2,6 @@
 #include <pt.h>   // include protothread library
 
 #define BAUD_RATE 115200 //Faster than 9600
-#define LEDPIN 13  // LEDPIN is a constant 
-#define POT_1 A0
-#define POT_2 A1
 
 #define POT_1 A0
 #define POT_2 A1
@@ -30,6 +27,7 @@ int newTorque1 = 0;
 int newTorque2 = 0;
 int motorTorque1 = 0;
 int motorTorque2 = 0;
+
 String thetaString1 = "", thetaString2 = "";
 
 int pot3, pot4;
@@ -37,11 +35,10 @@ int pot3, pot4;
 int in1 = 8;
 int in2 = 7;
 //Motor 2
-int in3 = 12;
-int in4 = 13;
+int in3 = 10;
+int in4 = 9;
 
 char str[255];
-const char s[2] = "-"; 
 
 String inputString = "";
 boolean stringComplete = false;
@@ -59,7 +56,7 @@ static struct pt pt1, pt2, pt3, pt4; // each protothread needs one of these
 
 
 void setup() {
-  pinMode(LEDPIN, OUTPUT); // LED init
+  
   pinMode(MOTOR_PIN_1, OUTPUT);
   pinMode(MOTOR_PIN_2, OUTPUT);
   pinMode(in1, OUTPUT);
@@ -95,7 +92,6 @@ static int protothreadAngle(struct pt *pt, int interval) {
     newtheta1 = ANGLE_FACTOR * (pot1 - 512);
     pot2 = analogRead(POT_2); //Top potentiometer
     newtheta2 = ANGLE_FACTOR * (pot2 - 512);
-    
   }
   PT_END(pt);
 }
@@ -134,12 +130,12 @@ static int protothreadMotor (struct pt *pt) {
     }
     else {
       //Motor B Counter-clockwise
-      digitalWrite(in4, LOW);
-      digitalWrite(in3, HIGH);
+      digitalWrite(in3, LOW);
+      digitalWrite(in4, HIGH);
     }
     
     analogWrite(MOTOR_PIN_1, abs(motorTorque1));
-    analogWrite(MOTOR_PIN_2, abs(motorTorque2));
+    analogWrite(MOTOR_PIN_2, abs(motorTorque1));
     delay(10);
     digitalWrite(GREEN_LED, LOW);
   }
@@ -158,8 +154,8 @@ static int protothreadInput(struct pt *pt, int interval) {
     inputString = Serial.readStringUntil('\n');
     inputString.toCharArray(str,255);
     //Process Strings to get each motorTorquePercent
-    sscanf(str,"%d[^,],%d[^,]", &newTorque1, &newTorque2);
-    Serial.println("NewTorque1: " + newTorque1);
+    sscanf(str,"%d[^,],%d", &newTorque1, &newTorque2);
+    Serial.println("NewTorque1: " + newTorque2 );
     //Serial.flush();
     
   }
@@ -180,7 +176,7 @@ static int protothreadOutput(struct pt *pt, int interval) {
     thetaString1.concat(theta1);
     thetaString1.concat(',');
     thetaString2.concat(theta2);
-    thetaString2.concat(',');
+    //thetaString2.concat(',');
     Serial.println(thetaString1 + thetaString2);
     thetaString1 = "";
     thetaString2 = "";
@@ -191,7 +187,7 @@ static int protothreadOutput(struct pt *pt, int interval) {
 void loop() {
   //Starting protothreads, and setting time interval (subject to change)
   protothreadAngle(&pt1, 10);     //Angle Proto-Thread
-  protothreadMotor(&pt2);   //Motor Proto-Thread
   protothreadInput(&pt3, 10);     //Serial Input Proto-Thread
+  protothreadMotor(&pt2);         //Motor Proto-Thread
   protothreadOutput(&pt4, 1000);  //Serial Output Proto-Thread
 }

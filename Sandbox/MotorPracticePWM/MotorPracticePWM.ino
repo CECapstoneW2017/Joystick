@@ -13,8 +13,8 @@ int pot1, pot2, pot3, pot4;
 int in1 = 8;
 int in2 = 7;
 //Motor 2
-int in3 = 12;
-int in4 = 13;
+int in3 = 10;
+int in4 = 9;
 
 
 double angle1, angle2;
@@ -42,8 +42,8 @@ void loop() {
   pot3 = analogRead(POT_3);
   pot4 = analogRead(POT_4);
   
-  motorADirection = ( pot3 - 512) / 2;
-  motorBDirection = ( pot4 - 512) / 2;
+  motorADirection = ( pot1 - 512) / 2;
+  motorBDirection = ( pot2 - 512) / 2;
   angle1 = ANGLE_FACTOR * (pot1 - 512);
   angle2 = ANGLE_FACTOR * (pot2 - 512);
   angleString1 = "Angle 1: ";
@@ -63,16 +63,16 @@ void loop() {
     digitalWrite(in2, HIGH);
   }
   
-  if(motorADirection > 0)
+  if(motorBDirection > 0)
   {
     //Motor B Clockwise
-    digitalWrite(in2, LOW);
-    digitalWrite(in1, HIGH);
+    digitalWrite(in4, LOW);
+    digitalWrite(in3, HIGH);
   }
   else {
     //Motor B Counter-clockwise
-    digitalWrite(in1, LOW);
-    digitalWrite(in2, HIGH);
+    digitalWrite(in3, LOW);
+    digitalWrite(in4, HIGH);
   }
   analogWrite(MOTOR_PIN_1, abs(motorADirection));
   analogWrite(MOTOR_PIN_2, abs(motorBDirection));
