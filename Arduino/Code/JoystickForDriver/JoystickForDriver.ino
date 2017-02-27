@@ -1,4 +1,4 @@
-//This is a test program for learning protothreading
+
 #include <pt.h>   // include protothread library
 
 #define BAUD_RATE 250000 //Faster than 9600
@@ -14,15 +14,13 @@
 
 #define MOTOR_PIN_1 5 //Pin supports PWM
 #define MOTOR_PIN_2 6 //Pin that supports PWM
-#define ANGLE_FACTOR 0.26 // Factor to calculate angle from pot signal
-
 
 int pot1 = 0;
 int pot2 = 0;
-double theta1 = 0;
-double theta2 = 0;
-double newtheta1 = 0;
-double newtheta2 = 0;
+int theta1 = 0;
+int theta2 = 0;
+int newtheta1 = 0;
+int newtheta2 = 0;
 int newTorque1 = 0;
 int newTorque2 = 0;
 int motorTorque1 = 0;
@@ -154,7 +152,7 @@ static int protothreadInput(struct pt *pt, int interval) {
     inputString = Serial.readStringUntil('\n');
     inputString.toCharArray(str,255);
     //Process Strings to get each motorTorquePercent
-    sscanf(str,"%d[^,],%d", &newTorque1, &newTorque2);
+    sscanf(str,"%d,%d", &newTorque1, &newTorque2);
     Serial.println("NewTorque1: " + newTorque2 );
     //Serial.flush();
     
@@ -173,7 +171,13 @@ static int protothreadOutput(struct pt *pt, int interval) {
     digitalWrite(YELLOW_LED, !digitalRead(YELLOW_LED));
     theta1 = newtheta1;
     theta2 = newtheta2;
-    Serial.println(theta1 + ',' + theta2);
+    thetaString1.concat(theta1);
+    thetaString1.concat(',');
+    thetaString2.concat(theta2);
+    //thetaString2.concat(',');
+    Serial.println(thetaString1 + thetaString2);
+    thetaString1 = "";
+    thetaString2 = "";
   }
   PT_END(pt);
 }

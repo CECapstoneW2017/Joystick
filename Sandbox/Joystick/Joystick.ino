@@ -154,7 +154,7 @@ static int protothreadInput(struct pt *pt, int interval) {
     inputString = Serial.readStringUntil('\n');
     inputString.toCharArray(str,255);
     //Process Strings to get each motorTorquePercent
-    sscanf(str,"%d[^,],%d", &newTorque1, &newTorque2);
+    sscanf(str,"%d,%d", &newTorque1, &newTorque2);
     Serial.println("NewTorque1: " + newTorque2 );
     //Serial.flush();
     
