@@ -88,10 +88,10 @@ static int protothreadAngle(struct pt *pt, int interval) {
     PT_WAIT_UNTIL(pt, millis() - timestamp > interval );
     timestamp = millis(); // take a new timestamp
     
-    pot1 = analogRead(POT_1); //Top potentiometer
-    newtheta1 = ANGLE_FACTOR * (pot1 - 512);
-    pot2 = analogRead(POT_2); //Top potentiometer
-    newtheta2 = ANGLE_FACTOR * (pot2 - 512);
+    newtheta1 = analogRead(POT_1); //Top potentiometer
+    //newtheta1 = ANGLE_FACTOR * (pot1 - 512);
+    newtheta2 = analogRead(POT_2); //Top potentiometer
+    //newtheta2 = ANGLE_FACTOR * (pot2 - 512);
   }
   PT_END(pt);
 }
