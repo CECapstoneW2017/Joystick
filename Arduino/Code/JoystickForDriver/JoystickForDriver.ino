@@ -1,16 +1,12 @@
 
 #include <pt.h>   // include protothread library
 
-#define BAUD_RATE 250000 //Faster than 9600
+#define BAUD_RATE 256000 //Baud rate for the Windows Driver
 
 #define POT_1 A0
 #define POT_2 A1
 #define POT_3 A2
 #define POT_4 A3
-
-#define YELLOW_LED 13
-#define GREEN_LED 12
-#define RED_LED 11
 
 #define MOTOR_PIN_1 5 //Pin supports PWM
 #define MOTOR_PIN_2 6 //Pin that supports PWM
@@ -28,7 +24,7 @@ int motorTorque2 = 0;
 
 String thetaString1 = "", thetaString2 = "";
 
-int pot3, pot4;
+
 //Motor 1
 int in1 = 8;
 int in2 = 7;
@@ -62,10 +58,6 @@ void setup() {
   pinMode(in3, OUTPUT);
   pinMode(in4, OUTPUT);
   inputString.reserve(200);
-
-  pinMode(YELLOW_LED, OUTPUT);
-  pinMode(GREEN_LED, OUTPUT);
-  pinMode(RED_LED, OUTPUT);
   
   PT_INIT(&pt1);  // initialise the two
   PT_INIT(&pt2);  // protothread variables
@@ -87,9 +79,7 @@ static int protothreadAngle(struct pt *pt, int interval) {
     timestamp = millis(); // take a new timestamp
     
     newtheta1 = analogRead(POT_1); //Top potentiometer
-    //newtheta1 = ANGLE_FACTOR * (pot1 - 512);
     newtheta2 = analogRead(POT_2); //Top potentiometer
-    //newtheta2 = ANGLE_FACTOR * (pot2 - 512);
   }
   PT_END(pt);
 }
@@ -100,11 +90,6 @@ static int protothreadMotor (struct pt *pt) {
   while(1) {
     //Wait Until condition can also be changed to "when motorTorque value changed"
     PT_WAIT_UNTIL(pt, newTorque1 != motorTorque1 || newTorque2 != motorTorque2); 
-    //Toggle the GREEN LED
-    //digitalWrite(GREEN_LED, !digitalRead(GREEN_LED));
-    digitalWrite(GREEN_LED, HIGH);
-    //timestamp = millis(); // Set new timestamp
-    Serial.println("In Motor Thread, torque is : " + newTorque1);
     motorTorque1 = newTorque1;
     motorTorque2 = newTorque2;
     
@@ -134,8 +119,7 @@ static int protothreadMotor (struct pt *pt) {
     
     analogWrite(MOTOR_PIN_1, abs(motorTorque1));
     analogWrite(MOTOR_PIN_2, abs(motorTorque2));
-    delay(10);
-    digitalWrite(GREEN_LED, LOW);
+
   }
   PT_END(pt);
 }
@@ -146,16 +130,11 @@ static int protothreadInput(struct pt *pt, int interval) {
   PT_BEGIN(pt);
   while(1) {
     PT_WAIT_UNTIL(pt, Serial.available() > 0 ); // What should the condition be?
-    //Toggle RED_LED
-    digitalWrite(RED_LED, !digitalRead(RED_LED));
     //Read from the serial input buffer
     inputString = Serial.readStringUntil('\n');
     inputString.toCharArray(str,255);
     //Process Strings to get each motorTorquePercent
-    sscanf(str,"%d,%d", &newTorque1, &newTorque2);
-    Serial.println("NewTorque1: " + newTorque2 );
-    //Serial.flush();
-    
+    sscanf(str,"%d-%d", &newTorque1, &newTorque2);
   }
   PT_END(pt);
 }
@@ -167,8 +146,6 @@ static int protothreadOutput(struct pt *pt, int interval) {
   while(1) {
     PT_WAIT_UNTIL(pt, newtheta1 != theta1 || newtheta2 != theta2 ); // What should the condition be?
     //Send the angle positions
-    //Toggle YELLOW_LED
-    digitalWrite(YELLOW_LED, !digitalRead(YELLOW_LED));
     theta1 = newtheta1;
     theta2 = newtheta2;
     thetaString1.concat(theta1);
