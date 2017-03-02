@@ -63,7 +63,7 @@ void setup() {
   PT_INIT(&pt2);  // protothread variables
   PT_INIT(&pt3);  // initialise the two
   PT_INIT(&pt4);  // protothread variables
-  Serial.begin(BAUD_RATE);
+  Serial.begin(BAUD_RATE, SERIAL_8E1);
 }
 
 
@@ -129,7 +129,8 @@ static int protothreadInput(struct pt *pt, int interval) {
   static unsigned long timestamp = 0;
   PT_BEGIN(pt);
   while(1) {
-    PT_WAIT_UNTIL(pt, Serial.available() > 0 ); // What should the condition be?
+    PT_WAIT_UNTIL(pt, (Serial.available() > 0) & (millis() - timestamp > interval) ); // What should the condition be?
+    timestamp = millis();
     //Read from the serial input buffer
     inputString = Serial.readStringUntil('\n');
     inputString.toCharArray(str,255);
@@ -144,7 +145,8 @@ static int protothreadOutput(struct pt *pt, int interval) {
   static unsigned long timestamp = 0;
   PT_BEGIN(pt);
   while(1) {
-    PT_WAIT_UNTIL(pt, newtheta1 != theta1 || newtheta2 != theta2 ); // What should the condition be?
+    PT_WAIT_UNTIL(pt, (Serial.available() > 0) & (millis() - timestamp > interval) ); // What should the condition be?
+    timestamp = millis();
     //Send the angle positions
     theta1 = newtheta1;
     theta2 = newtheta2;
@@ -161,8 +163,8 @@ static int protothreadOutput(struct pt *pt, int interval) {
 
 void loop() {
   //Starting protothreads, and setting time interval (subject to change)
-  protothreadAngle(&pt1, 10);     //Angle Proto-Thread
-  protothreadInput(&pt3, 10);     //Serial Input Proto-Thread
+  protothreadAngle(&pt1, 1);     //Angle Proto-Thread
+  protothreadInput(&pt3, 1);     //Serial Input Proto-Thread
   protothreadMotor(&pt2);         //Motor Proto-Thread
-  protothreadOutput(&pt4, 1000);  //Serial Output Proto-Thread
+  protothreadOutput(&pt4, 1);  //Serial Output Proto-Thread
 }
