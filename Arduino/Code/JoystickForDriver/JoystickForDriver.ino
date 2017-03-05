@@ -1,4 +1,4 @@
-
+ 
 #include <pt.h>   // include protothread library
 
 #define BAUD_RATE 256000 //Baud rate for the Windows Driver
@@ -129,7 +129,7 @@ static int protothreadInput(struct pt *pt, int interval) {
   static unsigned long timestamp = 0;
   PT_BEGIN(pt);
   while(1) {
-    PT_WAIT_UNTIL(pt, (Serial.available() > 0) & (millis() - timestamp > interval) ); // What should the condition be?
+    PT_WAIT_UNTIL(pt, (Serial.available() > 0) && (millis() - timestamp > interval) ); // What should the condition be?
     timestamp = millis();
     //Read from the serial input buffer
     inputString = Serial.readStringUntil('\n');
@@ -145,7 +145,7 @@ static int protothreadOutput(struct pt *pt, int interval) {
   static unsigned long timestamp = 0;
   PT_BEGIN(pt);
   while(1) {
-    PT_WAIT_UNTIL(pt, (Serial.available() > 0) & (millis() - timestamp > interval) ); // What should the condition be?
+    PT_WAIT_UNTIL(pt, newtheta1 != theta1 || newtheta2 != theta2 ); // What should the condition be?
     timestamp = millis();
     //Send the angle positions
     theta1 = newtheta1;
