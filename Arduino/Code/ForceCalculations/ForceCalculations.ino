@@ -41,6 +41,7 @@ char str[255];
 
 String inputString = "";
 boolean stringComplete = false;
+static unsigned long timestamp2 = 0;
 
 
 
@@ -180,4 +181,14 @@ void loop() {
   protothreadInput(&pt3, 1);     //Serial Input Proto-Thread
   protothreadMotor(&pt2);         //Motor Proto-Thread
   protothreadOutput(&pt4, 1);  //Serial Output Proto-Thread
+
+  if (millis() - timestamp2 > 250)
+  {
+    if(newTorque1 > -251)
+    {
+      newTorque1 -= 1;
+      timestamp2 = millis();
+    }
+  }
+  
 }
