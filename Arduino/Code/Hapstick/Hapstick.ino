@@ -109,7 +109,7 @@ static int protothreadMotor (struct pt *pt) {
     motorTorque1 = newTorque1;
     motorTorque2 = newTorque2;
     
-    if(motorTorque1 > 0)
+    if(motorTorque1 < 0)
     {
       //Motor A Clockwise
       digitalWrite(in2, LOW);
