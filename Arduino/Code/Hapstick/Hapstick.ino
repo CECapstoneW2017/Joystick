@@ -69,7 +69,7 @@ void setup() {
   PT_INIT(&pt2);  // protothread variables
   PT_INIT(&pt3);  // initialise the two
   PT_INIT(&pt4);  // protothread variables
-  Serial.begin(BAUD_RATE);
+  Serial.begin(BAUD_RATE, SERIAL_8E1);
 }
 
 
